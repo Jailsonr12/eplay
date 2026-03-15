@@ -2,21 +2,24 @@ import { Headerbar, Links, LinkItem, LinkCard } from './styles'
 
 import logo from '../../assets/logo.svg'
 import carinho from '../../assets/carrinho.svg'
+import { Link } from 'react-router-dom'
 
 const Header = () => (
   <Headerbar>
     <div>
-      <img src={logo} alt="Eplay" />
+      <Link to={'/'}>
+        <img src={logo} alt="Eplay" />
+      </Link>
       <nav>
         <Links>
           <LinkItem>
-            <a href="#">Categorias</a>
+            <Link to="/categories">Categorias</Link>
           </LinkItem>
           <LinkItem>
-            <a href="#">Nocidades</a>
+            <Link to="/home">Novidades</Link>
           </LinkItem>
           <LinkItem>
-            <a href="">Promoção</a>
+            <Link to="/promotions">Promoção</Link>
           </LinkItem>
         </Links>
       </nav>
