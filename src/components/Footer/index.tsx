@@ -1,39 +1,29 @@
-import {
-  Container,
-  FooterSection,
-  LinkItem,
-  Links,
-  SectionTitle
-} from './styles'
-
-const currentYear = new Date().getFullYear()
+import logo from '../../assets/logo.png'
+import instagram from '../../assets/instagram.svg'
+import facebook from '../../assets/facebook.svg'
+import twitter from '../../assets/twitter.svg'
+import { Container, Disclaimer, Logo, SocialLinks } from './styles'
 
 const Footer = () => (
   <Container>
     <div className="container">
-      <FooterSection>
-        <SectionTitle>categorias</SectionTitle>
-        <Links>
-          <LinkItem href="#">Ação</LinkItem>
-          <LinkItem href="#">Aventura</LinkItem>
-          <LinkItem href="#">RPG</LinkItem>
-          <LinkItem href="#">Esportes</LinkItem>
-          <LinkItem href="#">Estrategia</LinkItem>
-          <LinkItem href="#">FPD</LinkItem>
-          <LinkItem href="#">Simulação</LinkItem>
-        </Links>
-      </FooterSection>
-      <FooterSection>
-        <SectionTitle>Acesso rápido</SectionTitle>
-        <Links>
-          <LinkItem href="#">Novidades</LinkItem>
-          <LinkItem href="#">Promoções</LinkItem>
-          <LinkItem href="#">Em Breve</LinkItem>
-        </Links>
-      </FooterSection>
-      <p>
-        {currentYear} - &copy; Todos os direitos reservados - Desenvolvido por
-      </p>
+      <Logo src={logo} alt="efood" />
+      <SocialLinks>
+        <a href="#" aria-label="Instagram">
+          <img src={instagram} alt="" />
+        </a>
+        <a href="#" aria-label="Facebook">
+          <img src={facebook} alt="" />
+        </a>
+        <a href="#" aria-label="Twitter">
+          <img src={twitter} alt="" />
+        </a>
+      </SocialLinks>
+      <Disclaimer>
+        A efood e uma plataforma para divulgacao de estabelecimentos, a
+        responsabilidade pela entrega, qualidade dos produtos e toda do
+        estabelecimento contratado.
+      </Disclaimer>
     </div>
   </Container>
 )

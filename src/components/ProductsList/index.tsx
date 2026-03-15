@@ -11,7 +11,6 @@ export type Props = {
 const ProductsList = ({ title, background, games }: Props) => (
   <Container background={background}>
     <div className="container">
-      <h2>{title}</h2>
       <List>
         {games?.map((game) => (
           <Product
