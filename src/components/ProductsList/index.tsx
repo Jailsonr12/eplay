@@ -1,27 +1,33 @@
-import Games from '../../models/Games'
+import Restaurant from '../../models/Restaurant'
 import Product from '../Product'
 import { Container, List, Title } from './styles'
+
+const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1)
 
 export type Props = {
   title: string
   background: 'black' | 'gray'
-  games: Games[]
+  restaurants: Restaurant[]
 }
 
-const ProductsList = ({ title, background, games }: Props) => (
+const ProductsList = ({ title, background, restaurants }: Props) => (
   <Container background={background}>
     <div className="container">
       <Title>{title}</Title>
       <List>
-        {games?.map((game) => (
+        {restaurants.map((restaurant) => (
           <Product
-            key={game.id}
-            category={game.category}
-            description={game.description}
-            image={game.image}
-            system={game.system}
-            title={game.title}
-            infos={game.infos}
+            key={restaurant.id}
+            id={restaurant.id}
+            description={restaurant.descricao}
+            image={restaurant.capa}
+            rating={restaurant.avaliacao}
+            title={restaurant.titulo}
+            infos={
+              restaurant.destacado
+                ? ['Destaque da semana', capitalize(restaurant.tipo)]
+                : [capitalize(restaurant.tipo)]
+            }
           />
         ))}
       </List>

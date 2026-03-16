@@ -3,6 +3,7 @@ import {
   Card,
   Content,
   Descricao,
+  DetailsButton,
   Infos,
   Nota,
   TopLine,
@@ -12,18 +13,18 @@ import {
 import estrela from '../../assets/estrela.png'
 
 type Props = {
+  id: number
   title: string
-  category: string
-  system: string
+  rating: number
   description: string
   infos: string[]
   image: string
 }
 
 const Product = ({
+  id,
   title,
-  category,
-  system,
+  rating,
   description,
   infos,
   image
@@ -39,13 +40,13 @@ const Product = ({
       <TopLine>
         <Titulo>{title}</Titulo>
         <Nota>
-          <span>{system}</span>
+          <span>{rating}</span>
           <img src={estrela} alt="estrela" />
         </Nota>
       </TopLine>
 
       <Descricao>{description}</Descricao>
-      <Tag>{category}</Tag>
+      <DetailsButton to={`/perfil/${id}`}>Saiba mais</DetailsButton>
     </Content>
   </Card>
 )
