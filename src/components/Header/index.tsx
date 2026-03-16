@@ -1,17 +1,20 @@
-﻿import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import logo from '../../assets/logo.png'
+import { useCart } from '../../contexts/CartContext'
 import {
   CompactHeaderBar,
   CompactHeaderContent,
   Headerbar,
   HeroTitle,
   Logo,
+  TopButton,
   TopLink
 } from './styles'
 
 const Header = () => {
   const { pathname } = useLocation()
+  const { openCart, totalItems } = useCart()
   const isProfilePage = pathname === '/perfil'
 
   if (isProfilePage) {
@@ -23,7 +26,9 @@ const Header = () => {
             <Link to="/">
               <Logo src={logo} alt="efood" />
             </Link>
-            <TopLink to="#">0 produto(s) no carrinho</TopLink>
+            <TopButton type="button" onClick={openCart}>
+              {totalItems} produto(s) no carrinho
+            </TopButton>
           </CompactHeaderContent>
         </div>
       </CompactHeaderBar>

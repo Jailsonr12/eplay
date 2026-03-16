@@ -14,6 +14,7 @@ const dishes: Dish[] = [
     title: 'Pizza Marguerita',
     description: shortDescription,
     modalDescription,
+    price: 60.9,
     serving: 'Serve: de 2 a 3 pessoas',
     priceLabel: 'Adicionar ao carrinho - R$ 60,90',
     image: pizza
@@ -23,6 +24,7 @@ const dishes: Dish[] = [
     title: 'Pizza Marguerita',
     description: shortDescription,
     modalDescription,
+    price: 60.9,
     serving: 'Serve: de 2 a 3 pessoas',
     priceLabel: 'Adicionar ao carrinho - R$ 60,90',
     image: pizza
@@ -32,6 +34,7 @@ const dishes: Dish[] = [
     title: 'Pizza Marguerita',
     description: shortDescription,
     modalDescription,
+    price: 60.9,
     serving: 'Serve: de 2 a 3 pessoas',
     priceLabel: 'Adicionar ao carrinho - R$ 60,90',
     image: pizza
@@ -41,6 +44,7 @@ const dishes: Dish[] = [
     title: 'Pizza Marguerita',
     description: shortDescription,
     modalDescription,
+    price: 60.9,
     serving: 'Serve: de 2 a 3 pessoas',
     priceLabel: 'Adicionar ao carrinho - R$ 60,90',
     image: pizza
@@ -50,6 +54,7 @@ const dishes: Dish[] = [
     title: 'Pizza Marguerita',
     description: shortDescription,
     modalDescription,
+    price: 60.9,
     serving: 'Serve: de 2 a 3 pessoas',
     priceLabel: 'Adicionar ao carrinho - R$ 60,90',
     image: pizza
@@ -59,6 +64,7 @@ const dishes: Dish[] = [
     title: 'Pizza Marguerita',
     description: shortDescription,
     modalDescription,
+    price: 60.9,
     serving: 'Serve: de 2 a 3 pessoas',
     priceLabel: 'Adicionar ao carrinho - R$ 60,90',
     image: pizza

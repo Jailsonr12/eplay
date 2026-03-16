@@ -1,17 +1,23 @@
-﻿import Footer from './components/Footer'
+﻿import { BrowserRouter } from 'react-router-dom'
+
+import CartSidebar from './components/CartSidebar'
+import Footer from './components/Footer'
 import Header from './components/Header'
+import { CartProvider } from './contexts/CartContext'
 import Rotas from './routes'
 import { GlobalCss } from './styles'
-import { BrowserRouter } from 'react-router-dom'
 
 function App() {
   return (
-    <BrowserRouter>
-      <GlobalCss />
-      <Header />
-      <Rotas />
-      <Footer />
-    </BrowserRouter>
+    <CartProvider>
+      <BrowserRouter>
+        <GlobalCss />
+        <Header />
+        <Rotas />
+        <Footer />
+        <CartSidebar />
+      </BrowserRouter>
+    </CartProvider>
   )
 }
 

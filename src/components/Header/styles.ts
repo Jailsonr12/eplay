@@ -62,15 +62,19 @@ export const TopLink = styled(Link)`
   font-weight: 700;
   color: ${cores.vermelho};
   text-decoration: none;
+`
 
-  &:last-child {
-    justify-self: end;
-  }
+export const TopButton = styled.button`
+  justify-self: end;
+  border: none;
+  background: transparent;
+  color: ${cores.vermelho};
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
 
   @media (max-width: 768px) {
-    &:last-child {
-      justify-self: center;
-    }
+    justify-self: center;
   }
 `
 
