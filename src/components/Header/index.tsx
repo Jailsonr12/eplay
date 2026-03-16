@@ -42,7 +42,7 @@ const Header = () => {
           <Logo src={logo} alt="efood" />
         </Link>
         <HeroTitle>
-          Viva experiências gastronômicas
+          Viva experiÃªncias gastronÃ´micas
           <br />
           no conforto da sua casa
         </HeroTitle>
