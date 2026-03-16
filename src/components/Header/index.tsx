@@ -1,7 +1,8 @@
 import { Link, useLocation } from 'react-router-dom'
 
 import logo from '../../assets/logo.png'
-import { useCart } from '../../contexts/CartContext'
+import { useAppDispatch, useAppSelector } from '../../store/hooks'
+import { openCart } from '../../store/reducers/cart'
 import {
   CompactHeaderBar,
   CompactHeaderContent,
@@ -14,19 +15,20 @@ import {
 
 const Header = () => {
   const { pathname } = useLocation()
-  const { openCart, totalItems } = useCart()
-  const isProfilePage = pathname === '/perfil'
+  const dispatch = useAppDispatch()
+  const totalItems = useAppSelector((state) => state.cart.items.length)
+  const isProfilePage = pathname.startsWith('/perfil/')
 
   if (isProfilePage) {
     return (
       <CompactHeaderBar>
         <div className="container">
           <CompactHeaderContent>
-            <TopLink to="/perfil">Restaurantes</TopLink>
+            <TopLink to="/">Restaurantes</TopLink>
             <Link to="/">
               <Logo src={logo} alt="efood" />
             </Link>
-            <TopButton type="button" onClick={openCart}>
+            <TopButton type="button" onClick={() => dispatch(openCart())}>
               {totalItems} produto(s) no carrinho
             </TopButton>
           </CompactHeaderContent>
@@ -38,7 +40,7 @@ const Header = () => {
   return (
     <Headerbar>
       <div className="container">
-        <Link to="/perfil">
+        <Link to="/">
           <Logo src={logo} alt="efood" />
         </Link>
         <HeroTitle>

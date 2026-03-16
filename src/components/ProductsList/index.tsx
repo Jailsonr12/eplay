@@ -2,7 +2,8 @@ import Restaurant from '../../models/Restaurant'
 import Product from '../Product'
 import { Container, List, Title } from './styles'
 
-const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1)
+const capitalize = (value: string) =>
+  value.charAt(0).toUpperCase() + value.slice(1)
 
 export type Props = {
   title: string

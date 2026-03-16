@@ -1,77 +1,61 @@
+import { useEffect, useState } from 'react'
 import ProductsList from '../../components/ProductsList'
-import Games from '../../models/Games'
+import Restaurant from '../../models/Restaurant'
+import { getRestaurants } from '../../services/api'
+import { PageMessage, PageSection } from '../../styles'
 
-import japa from '../../assets/japa.png'
-import comida from '../../assets/comida.png'
+const Home = () => {
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
 
-const promocoes: Games[] = [
-  {
-    id: 1,
-    category: 'Saiba mais',
-    description:
-      'Peça já o melhor da culinária japonesa no conforto da sua casa! Sushis frescos, sashimis deliciosos e pratos quentes irresistíveis. Entrega rápida, embalagens cuidadosas e qualidade garantida.Experimente o Japão sem sair do lar com nosso delivery!',
-    image: japa,
-    title: 'Hioki Sushi',
-    system: '4.9',
-    infos: ['Destaque da semana', 'Japonesa ']
-  },
-  {
-    id: 2,
-    category: 'Saiba Mais',
-    description:
-      'A La Dolce Vita Trattoria leva a autêntica cozinha italiana até você! Desfrute de massas caseiras, pizzas deliciosas e risotos incríveis, tudo no conforto do seu lar. Entrega rápida, pratos bem embalados e sabor inesquecível. Peça já!',
-    image: comida,
-    title: 'La Dolce Vita Trattoria ',
-    system: '4.6',
-    infos: ['Italiano']
-  },
-  {
-    id: 3,
-    category: 'Saiba Mais',
-    description:
-      'A La Dolce Vita Trattoria leva a autêntica cozinha italiana até você! Desfrute de massas caseiras, pizzas deliciosas e risotos incríveis, tudo no conforto do seu lar. Entrega rápida, pratos bem embalados e sabor inesquecível. Peça já!',
-    image: comida,
-    title: 'La Dolce Vita Trattoria ',
-    system: '4.8',
-    infos: ['Italiano']
-  },
-  {
-    id: 4,
-    category: 'Saiba Mais',
-    description:
-      'A La Dolce Vita Trattoria leva a autêntica cozinha italiana até você! Desfrute de massas caseiras, pizzas deliciosas e risotos incríveis, tudo no conforto do seu lar. Entrega rápida, pratos bem embalados e sabor inesquecível. Peça já!',
-    image: comida,
-    title: 'La Dolce Vita Trattoria ',
-    system: '4.7',
-    infos: ['Italiano']
-  },
-  {
-    id: 5,
-    category: 'Saiba Mais',
-    description:
-      'A La Dolce Vita Trattoria leva a autêntica cozinha italiana até você! Desfrute de massas caseiras, pizzas deliciosas e risotos incríveis, tudo no conforto do seu lar. Entrega rápida, pratos bem embalados e sabor inesquecível. Peça já!',
-    image: comida,
-    title: 'La Dolce Vita Trattoria ',
-    system: '4.5',
-    infos: ['Italiano']
-  },
-  {
-    id: 6,
-    category: 'Saiba Mais',
-    description:
-      'A La Dolce Vita Trattoria leva a autêntica cozinha italiana até você! Desfrute de massas caseiras, pizzas deliciosas e risotos incríveis, tudo no conforto do seu lar. Entrega rápida, pratos bem embalados e sabor inesquecível. Peça já!',
-    image: comida,
-    title: 'La Dolce Vita Trattoria ',
-    system: '5.0',
-    infos: ['Italiano']
+  useEffect(() => {
+    const controller = new AbortController()
+
+    getRestaurants(controller.signal)
+      .then((data) => {
+        setRestaurants(data)
+        setError('')
+      })
+      .catch((err: Error) => {
+        if (err.name !== 'AbortError') {
+          setError('Nao foi possivel carregar os restaurantes.')
+        }
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
+
+    return () => controller.abort()
+  }, [])
+
+  if (isLoading) {
+    return (
+      <PageSection>
+        <div className="container">
+          <PageMessage>Carregando restaurantes...</PageMessage>
+        </div>
+      </PageSection>
+    )
   }
-]
 
-const Home = () => (
-  <>
-    {/* <Banner /> */}
-    <ProductsList title="Promoções" background="gray" games={promocoes} />
-  </>
-)
+  if (error) {
+    return (
+      <PageSection>
+        <div className="container">
+          <PageMessage>{error}</PageMessage>
+        </div>
+      </PageSection>
+    )
+  }
+
+  return (
+    <ProductsList
+      title="Restaurantes"
+      background="gray"
+      restaurants={restaurants}
+    />
+  )
+}
 
 export default Home

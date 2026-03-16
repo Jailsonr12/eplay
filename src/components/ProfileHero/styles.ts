@@ -1,12 +1,10 @@
 import styled from 'styled-components'
-
-import apresentacao from '../../assets/apresentacao.png'
 import { cores } from '../../styles'
 
-export const HeroContainer = styled.section`
+export const HeroContainer = styled.section<{ $image: string }>`
   height: 280px;
   background-image: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)),
-    url(${apresentacao});
+    url(${(props) => props.$image});
   background-size: cover;
   background-position: center;
   color: ${cores.branca};
@@ -24,6 +22,7 @@ export const HeroContainer = styled.section`
 export const HeroCuisine = styled.h2`
   font-size: 32px;
   font-weight: 100;
+  text-transform: capitalize;
 `
 
 export const HeroTitle = styled.h1`

@@ -20,9 +20,9 @@ const Footer = () => (
         </a>
       </SocialLinks>
       <Disclaimer>
-        A efood e uma plataforma para divulgacao de estabelecimentos, a
-        responsabilidade pela entrega, qualidade dos produtos e toda do
-        estabelecimento contratado.
+        A efood e uma plataforma para divulgacao de estabelecimentos. Toda a
+        responsabilidade pela entrega, qualidade dos produtos e disponibilidade
+        e do restaurante contratado.
       </Disclaimer>
     </div>
   </Container>

@@ -21,14 +21,7 @@ type Props = {
   image: string
 }
 
-const Product = ({
-  id,
-  title,
-  rating,
-  description,
-  infos,
-  image
-}: Props) => (
+const Product = ({ id, title, rating, description, infos, image }: Props) => (
   <Card>
     <img src={image} alt={title} />
     <Infos>

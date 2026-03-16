@@ -1,10 +1,15 @@
+import Restaurant from '../../models/Restaurant'
 import { HeroContainer, HeroCuisine, HeroTitle } from './styles'
 
-const ProfileHero = () => (
-  <HeroContainer>
+type Props = {
+  restaurant: Restaurant
+}
+
+const ProfileHero = ({ restaurant }: Props) => (
+  <HeroContainer $image={restaurant.capa}>
     <div className="container">
-      <HeroCuisine>Italiana</HeroCuisine>
-      <HeroTitle>La Dolce Vita Trattoria</HeroTitle>
+      <HeroCuisine>{restaurant.tipo}</HeroCuisine>
+      <HeroTitle>{restaurant.titulo}</HeroTitle>
     </div>
   </HeroContainer>
 )

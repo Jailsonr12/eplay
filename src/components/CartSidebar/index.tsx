@@ -1,6 +1,8 @@
-﻿import { ChangeEvent, MouseEvent, useEffect, useState } from 'react'
-
-import { useCart } from '../../contexts/CartContext'
+import { ChangeEvent, MouseEvent, useEffect, useMemo, useState } from 'react'
+import { checkout } from '../../services/api'
+import { useAppDispatch, useAppSelector } from '../../store/hooks'
+import { clearCart, closeCart, removeItem } from '../../store/reducers/cart'
+import { formatCurrency } from '../../utils/format'
 import {
   CartAction,
   CartAside,
@@ -16,6 +18,8 @@ import {
   CartTotalLabel,
   CartTotalValue,
   DeleteButton,
+  EmptyText,
+  ErrorText,
   FieldError,
   FormActions,
   FormField,
@@ -25,12 +29,6 @@ import {
   FormTitle,
   SuccessText
 } from './styles'
-
-const toCurrency = (value: number) =>
-  value.toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
-  })
 
 type DeliveryForm = {
   receiver: string
@@ -69,12 +67,18 @@ const initialPayment: PaymentForm = {
 const onlyDigits = (value: string) => value.replace(/\D/g, '')
 
 const CartSidebar = () => {
-  const { clearCart, closeCart, isOpen, items, removeItem, totalPrice } =
-    useCart()
+  const dispatch = useAppDispatch()
+  const { isOpen, items } = useAppSelector((state) => state.cart)
+  const totalPrice = useMemo(
+    () => items.reduce((acc, item) => acc + item.price, 0),
+    [items]
+  )
   const [step, setStep] = useState<'cart' | 'delivery' | 'payment' | 'success'>(
     'cart'
   )
-  const [orderId, setOrderId] = useState<number | null>(null)
+  const [orderId, setOrderId] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
   const [delivery, setDelivery] = useState<DeliveryForm>(initialDelivery)
   const [payment, setPayment] = useState<PaymentForm>(initialPayment)
   const [deliveryErrors, setDeliveryErrors] = useState<Record<string, string>>(
@@ -86,6 +90,8 @@ const CartSidebar = () => {
     if (!isOpen) {
       setStep('cart')
       setOrderId(null)
+      setIsSubmitting(false)
+      setSubmitError('')
       setDelivery(initialDelivery)
       setPayment(initialPayment)
       setDeliveryErrors({})
@@ -94,8 +100,8 @@ const CartSidebar = () => {
   }, [isOpen])
 
   const finishOrder = () => {
-    clearCart()
-    closeCart()
+    dispatch(clearCart())
+    dispatch(closeCart())
   }
 
   const changeDelivery =
@@ -175,15 +181,15 @@ const CartSidebar = () => {
       errors.expMonth = 'Mes invalido'
     }
 
-    const year = Number(onlyDigits(payment.expYear))
-    const currentYear = new Date().getFullYear() % 100
-    if (!payment.expYear.trim()) {
+    const yearDigits = onlyDigits(payment.expYear)
+    const year =
+      yearDigits.length === 2 ? 2000 + Number(yearDigits) : Number(yearDigits)
+    const currentYear = new Date().getFullYear()
+    if (!yearDigits) {
       errors.expYear = 'Informe o ano'
-    } else if (
-      !Number.isInteger(year) ||
-      year < currentYear ||
-      year > currentYear + 20
-    ) {
+    } else if (yearDigits.length !== 2 && yearDigits.length !== 4) {
+      errors.expYear = 'Ano invalido'
+    } else if (year < currentYear || year > currentYear + 20) {
       errors.expYear = 'Ano invalido'
     }
 
@@ -191,58 +197,118 @@ const CartSidebar = () => {
     return Object.keys(errors).length === 0
   }
 
+  const submitOrder = async () => {
+    if (!validatePayment()) {
+      return
+    }
+
+    setIsSubmitting(true)
+    setSubmitError('')
+
+    try {
+      const yearDigits = onlyDigits(payment.expYear)
+      const year =
+        yearDigits.length === 2 ? 2000 + Number(yearDigits) : Number(yearDigits)
+
+      const response = await checkout({
+        products: items.map((item) => ({
+          id: item.productId,
+          price: item.price
+        })),
+        delivery: {
+          receiver: delivery.receiver.trim(),
+          address: {
+            description: delivery.address.trim(),
+            city: delivery.city.trim(),
+            zipCode: onlyDigits(delivery.zip),
+            number: Number(delivery.number),
+            complement: delivery.complement.trim()
+          }
+        },
+        payment: {
+          card: {
+            name: payment.cardName.trim(),
+            number: onlyDigits(payment.cardNumber),
+            code: Number(onlyDigits(payment.cvv)),
+            expires: {
+              month: Number(onlyDigits(payment.expMonth)),
+              year
+            }
+          }
+        }
+      })
+
+      setOrderId(response.orderId)
+      setStep('success')
+    } catch (error) {
+      setSubmitError('Nao foi possivel finalizar o pedido. Tente novamente.')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
   if (!isOpen) {
     return null
   }
 
   return (
-    <CartOverlay onClick={closeCart}>
+    <CartOverlay onClick={() => dispatch(closeCart())}>
       <CartAside
         onClick={(event: MouseEvent<HTMLElement>) => event.stopPropagation()}
       >
         <CartContent>
           {step === 'cart' ? (
             <>
-              <CartList>
-                {items.map((item) => (
-                  <CartCard key={item.id}>
-                    <CartImage src={item.image} alt={item.title} />
-                    <CartItemText>
-                      <CartItemTitle>{item.title}</CartItemTitle>
-                      <CartItemPrice>{toCurrency(item.price)}</CartItemPrice>
-                    </CartItemText>
-                    <DeleteButton
-                      type="button"
-                      onClick={() => removeItem(item.id)}
-                      aria-label="Remover item"
-                    >
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                      >
-                        <path
-                          d="M3 6H21M8 6V4H16V6M7 6V20H17V6M10 10V17M14 10V17"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </DeleteButton>
-                  </CartCard>
-                ))}
-              </CartList>
+              {items.length > 0 ? (
+                <>
+                  <CartList>
+                    {items.map((item) => (
+                      <CartCard key={item.cartId}>
+                        <CartImage src={item.image} alt={item.title} />
+                        <CartItemText>
+                          <CartItemTitle>{item.title}</CartItemTitle>
+                          <CartItemPrice>
+                            {formatCurrency(item.price)}
+                          </CartItemPrice>
+                        </CartItemText>
+                        <DeleteButton
+                          type="button"
+                          onClick={() => dispatch(removeItem(item.cartId))}
+                          aria-label="Remover item"
+                        >
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                          >
+                            <path
+                              d="M3 6H21M8 6V4H16V6M7 6V20H17V6M10 10V17M14 10V17"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </DeleteButton>
+                      </CartCard>
+                    ))}
+                  </CartList>
 
-              <CartTotal>
-                <CartTotalLabel>Valor total</CartTotalLabel>
-                <CartTotalValue>{toCurrency(totalPrice)}</CartTotalValue>
-              </CartTotal>
+                  <CartTotal>
+                    <CartTotalLabel>Valor total</CartTotalLabel>
+                    <CartTotalValue>
+                      {formatCurrency(totalPrice)}
+                    </CartTotalValue>
+                  </CartTotal>
 
-              <CartAction type="button" onClick={() => setStep('delivery')}>
-                Continuar com a entrega
-              </CartAction>
+                  <CartAction type="button" onClick={() => setStep('delivery')}>
+                    Continuar com a entrega
+                  </CartAction>
+                </>
+              ) : (
+                <EmptyText>Seu carrinho esta vazio.</EmptyText>
+              )}
             </>
           ) : step === 'delivery' ? (
             <>
@@ -342,7 +408,7 @@ const CartSidebar = () => {
           ) : step === 'payment' ? (
             <>
               <FormTitle>
-                Pagamento - Valor a pagar {toCurrency(totalPrice)}
+                Pagamento - Valor a pagar {formatCurrency(totalPrice)}
               </FormTitle>
 
               <FormField>
@@ -402,9 +468,9 @@ const CartSidebar = () => {
                   <FormLabel>Ano de vencimento</FormLabel>
                   <FormInput
                     value={payment.expYear}
-                    onChange={changePaymentDigits('expYear', 2)}
+                    onChange={changePaymentDigits('expYear', 4)}
                     $hasError={!!paymentErrors.expYear}
-                    placeholder="AA"
+                    placeholder="AAAA"
                   />
                   {paymentErrors.expYear && (
                     <FieldError>{paymentErrors.expYear}</FieldError>
@@ -412,26 +478,28 @@ const CartSidebar = () => {
                 </FormField>
               </FormGrid>
 
+              {submitError && <ErrorText>{submitError}</ErrorText>}
+
               <FormActions>
                 <CartAction
                   type="button"
-                  onClick={() => {
-                    if (validatePayment()) {
-                      setOrderId(Math.floor(100000 + Math.random() * 900000))
-                      setStep('success')
-                    }
-                  }}
+                  onClick={submitOrder}
+                  disabled={isSubmitting}
                 >
-                  Finalizar pagamento
+                  {isSubmitting ? 'Finalizando...' : 'Finalizar pagamento'}
                 </CartAction>
-                <CartAction type="button" onClick={() => setStep('delivery')}>
+                <CartAction
+                  type="button"
+                  onClick={() => setStep('delivery')}
+                  disabled={isSubmitting}
+                >
                   Voltar para a edicao de endereco
                 </CartAction>
               </FormActions>
             </>
           ) : (
             <>
-              <FormTitle>Pedido realizado - Pedido #{orderId ?? 0}</FormTitle>
+              <FormTitle>Pedido realizado - {orderId ?? ''}</FormTitle>
 
               <SuccessText>
                 Estamos felizes em informar que seu pedido ja esta em processo

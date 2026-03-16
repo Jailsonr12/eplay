@@ -13,9 +13,14 @@ export const CartOverlay = styled.div`
 
 export const CartAside = styled.aside`
   width: 360px;
-  min-height: 1005px;
-  height: 100%;
+  min-height: 100vh;
+  max-height: 100vh;
   background-color: ${cores.vermelho};
+  overflow-y: auto;
+
+  @media (max-width: 767px) {
+    width: min(360px, 100%);
+  }
 `
 
 export const CartContent = styled.div`
@@ -32,8 +37,8 @@ export const CartList = styled.ul`
 `
 
 export const CartCard = styled.li`
-  width: 344px;
-  height: 100px;
+  width: 100%;
+  min-height: 100px;
   background-color: ${cores.vermelhoClaro};
   padding: 8px;
   display: flex;
@@ -94,8 +99,8 @@ export const CartTotalValue = styled.span`
 `
 
 export const CartAction = styled.button`
-  width: 344px;
-  height: 24px;
+  width: 100%;
+  min-height: 32px;
   margin-top: 16px;
   border: none;
   background-color: ${cores.vermelhoClaro};
@@ -103,6 +108,12 @@ export const CartAction = styled.button`
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
+  padding: 4px 8px;
+
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
 `
 
 export const FormTitle = styled.h2`
@@ -150,6 +161,21 @@ export const SuccessText = styled.p`
   color: ${cores.vermelhoClaro};
   font-size: 14px;
   line-height: 1.35;
+`
+
+export const EmptyText = styled.p`
+  color: ${cores.vermelhoClaro};
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+`
+
+export const ErrorText = styled.p`
+  margin-top: 16px;
+  color: #ffe3e7;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
 `
 
 export const FieldError = styled.small`

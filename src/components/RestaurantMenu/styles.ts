@@ -25,7 +25,9 @@ export const List = styled.ul`
 export const MenuCard = styled.li`
   background-color: ${cores.vermelho};
   padding: 8px;
-  cursor: pointer;
+  min-height: 338px;
+  display: flex;
+  flex-direction: column;
 `
 
 export const MenuImage = styled.img`
@@ -48,6 +50,11 @@ export const MenuDescription = styled.p`
   color: ${cores.vermelhoClaro};
   font-size: 14px;
   line-height: 22px;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 `
 
 export const MenuButton = styled.button`
@@ -74,7 +81,7 @@ export const ModalOverlay = styled.div`
 
 export const ModalContent = styled.div`
   width: 1024px;
-  height: 344px;
+  min-height: 344px;
   padding: 32px;
   background-color: ${cores.vermelho};
   display: flex;
@@ -108,6 +115,11 @@ export const ModalImage = styled.img`
   height: 280px;
   object-fit: cover;
   display: block;
+
+  @media (max-width: 767px) {
+    width: 100%;
+    height: 240px;
+  }
 `
 
 export const ModalText = styled.div`
@@ -137,8 +149,8 @@ export const ModalAction = styled.button`
   border: none;
   background-color: ${cores.vermelhoClaro};
   color: ${cores.vermelho};
-  height: 24px;
-  padding: 0 8px;
+  min-height: 24px;
+  padding: 4px 8px;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;

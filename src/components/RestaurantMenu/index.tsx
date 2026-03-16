@@ -1,6 +1,8 @@
-﻿import { MouseEvent, useState } from 'react'
-
-import { useCart } from '../../contexts/CartContext'
+import { MouseEvent, useState } from 'react'
+import { MenuItem } from '../../models/Restaurant'
+import { useAppDispatch } from '../../store/hooks'
+import { addItem, openCart } from '../../store/reducers/cart'
+import { formatCurrency } from '../../utils/format'
 import {
   CloseButton,
   List,
@@ -20,38 +22,31 @@ import {
   ModalTitle
 } from './styles'
 
-export type Dish = {
-  id: number
-  title: string
-  description: string
-  image: string
-  price: number
-  modalDescription?: string
-  serving?: string
-  priceLabel?: string
-}
-
 type Props = {
-  dishes: Dish[]
+  dishes: MenuItem[]
 }
 
 const RestaurantMenu = ({ dishes }: Props) => {
-  const [selectedDish, setSelectedDish] = useState<Dish | null>(null)
-  const { addItem, openCart } = useCart()
+  const dispatch = useAppDispatch()
+  const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null)
+
+  const openDish = (dish: MenuItem) => setSelectedDish(dish)
 
   const addDishToCart = () => {
     if (!selectedDish) {
       return
     }
 
-    addItem({
-      id: selectedDish.id,
-      image: selectedDish.image,
-      title: selectedDish.title,
-      price: selectedDish.price
-    })
+    dispatch(
+      addItem({
+        productId: selectedDish.id,
+        image: selectedDish.foto,
+        title: selectedDish.nome,
+        price: selectedDish.preco
+      })
+    )
     setSelectedDish(null)
-    openCart()
+    dispatch(openCart())
   }
 
   return (
@@ -60,11 +55,13 @@ const RestaurantMenu = ({ dishes }: Props) => {
         <div className="container">
           <List>
             {dishes.map((dish) => (
-              <MenuCard key={dish.id} onClick={() => setSelectedDish(dish)}>
-                <MenuImage src={dish.image} alt={dish.title} />
-                <MenuTitle>{dish.title}</MenuTitle>
-                <MenuDescription>{dish.description}</MenuDescription>
-                <MenuButton type="button">Adicionar ao carrinho</MenuButton>
+              <MenuCard key={dish.id}>
+                <MenuImage src={dish.foto} alt={dish.nome} />
+                <MenuTitle>{dish.nome}</MenuTitle>
+                <MenuDescription>{dish.descricao}</MenuDescription>
+                <MenuButton type="button" onClick={() => openDish(dish)}>
+                  Adicionar ao carrinho
+                </MenuButton>
               </MenuCard>
             ))}
           </List>
@@ -81,17 +78,13 @@ const RestaurantMenu = ({ dishes }: Props) => {
             <CloseButton type="button" onClick={() => setSelectedDish(null)}>
               &times;
             </CloseButton>
-            <ModalImage src={selectedDish.image} alt={selectedDish.title} />
+            <ModalImage src={selectedDish.foto} alt={selectedDish.nome} />
             <ModalText>
-              <ModalTitle>{selectedDish.title}</ModalTitle>
-              <ModalDescription>
-                {selectedDish.modalDescription ?? selectedDish.description}
-              </ModalDescription>
-              <ModalServing>
-                {selectedDish.serving ?? 'Serve: de 2 a 3 pessoas'}
-              </ModalServing>
+              <ModalTitle>{selectedDish.nome}</ModalTitle>
+              <ModalDescription>{selectedDish.descricao}</ModalDescription>
+              <ModalServing>Serve: {selectedDish.porcao}</ModalServing>
               <ModalAction type="button" onClick={addDishToCart}>
-                {selectedDish.priceLabel ?? 'Adicionar ao carrinho - R$ 60,90'}
+                Adicionar ao carrinho - {formatCurrency(selectedDish.preco)}
               </ModalAction>
             </ModalText>
           </ModalContent>

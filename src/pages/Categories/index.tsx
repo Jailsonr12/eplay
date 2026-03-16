@@ -1,81 +1,76 @@
-﻿import pizza from '../../assets/pizza.png'
+import { useEffect, useState } from 'react'
+import { useParams } from 'react-router-dom'
 import ProfileHero from '../../components/ProfileHero'
-import RestaurantMenu, { Dish } from '../../components/RestaurantMenu'
+import RestaurantMenu from '../../components/RestaurantMenu'
+import Restaurant from '../../models/Restaurant'
+import { getRestaurantById } from '../../services/api'
+import { PageMessage, PageSection } from '../../styles'
 
-const shortDescription =
-  'A classica Marguerita: molho de tomate suculento, mussarela derretida, manjericao fresco e um toque de azeite. Sabor e simplicidade!'
+const Categories = () => {
+  const { id } = useParams()
+  const [restaurant, setRestaurant] = useState<Restaurant | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState('')
 
-const modalDescription =
-  'A pizza Margherita e uma pizza classica da culinaria italiana, reconhecida por sua simplicidade e sabor inigualavel. Ela e feita com uma base de massa fina e crocante, coberta com molho de tomate fresco, queijo mussarela de alta qualidade, manjericao fresco e azeite de oliva extra-virgem. A combinacao de sabores e perfeita, com o molho de tomate suculento e levemente acido, o queijo derretido e cremoso e as folhas de manjericao frescas, que adicionam um toque de sabor herbaceo. E uma pizza simples, mas deliciosa, que agrada a todos os paladares e e uma otima opcao para qualquer ocasiao.'
+  useEffect(() => {
+    const restaurantId = Number(id)
 
-const dishes: Dish[] = [
-  {
-    id: 1,
-    title: 'Pizza Marguerita',
-    description: shortDescription,
-    modalDescription,
-    price: 60.9,
-    serving: 'Serve: de 2 a 3 pessoas',
-    priceLabel: 'Adicionar ao carrinho - R$ 60,90',
-    image: pizza
-  },
-  {
-    id: 2,
-    title: 'Pizza Marguerita',
-    description: shortDescription,
-    modalDescription,
-    price: 60.9,
-    serving: 'Serve: de 2 a 3 pessoas',
-    priceLabel: 'Adicionar ao carrinho - R$ 60,90',
-    image: pizza
-  },
-  {
-    id: 3,
-    title: 'Pizza Marguerita',
-    description: shortDescription,
-    modalDescription,
-    price: 60.9,
-    serving: 'Serve: de 2 a 3 pessoas',
-    priceLabel: 'Adicionar ao carrinho - R$ 60,90',
-    image: pizza
-  },
-  {
-    id: 4,
-    title: 'Pizza Marguerita',
-    description: shortDescription,
-    modalDescription,
-    price: 60.9,
-    serving: 'Serve: de 2 a 3 pessoas',
-    priceLabel: 'Adicionar ao carrinho - R$ 60,90',
-    image: pizza
-  },
-  {
-    id: 5,
-    title: 'Pizza Marguerita',
-    description: shortDescription,
-    modalDescription,
-    price: 60.9,
-    serving: 'Serve: de 2 a 3 pessoas',
-    priceLabel: 'Adicionar ao carrinho - R$ 60,90',
-    image: pizza
-  },
-  {
-    id: 6,
-    title: 'Pizza Marguerita',
-    description: shortDescription,
-    modalDescription,
-    price: 60.9,
-    serving: 'Serve: de 2 a 3 pessoas',
-    priceLabel: 'Adicionar ao carrinho - R$ 60,90',
-    image: pizza
+    if (!restaurantId) {
+      setError('Restaurante nao encontrado.')
+      setIsLoading(false)
+      return
+    }
+
+    const controller = new AbortController()
+
+    getRestaurantById(restaurantId, controller.signal)
+      .then((data) => {
+        if (!data) {
+          setError('Restaurante nao encontrado.')
+          return
+        }
+
+        setRestaurant(data)
+        setError('')
+      })
+      .catch((err: Error) => {
+        if (err.name !== 'AbortError') {
+          setError('Nao foi possivel carregar o cardapio.')
+        }
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
+
+    return () => controller.abort()
+  }, [id])
+
+  if (isLoading) {
+    return (
+      <PageSection>
+        <div className="container">
+          <PageMessage>Carregando cardapio...</PageMessage>
+        </div>
+      </PageSection>
+    )
   }
-]
 
-const Categories = () => (
-  <>
-    <ProfileHero />
-    <RestaurantMenu dishes={dishes} />
-  </>
-)
+  if (error || !restaurant) {
+    return (
+      <PageSection>
+        <div className="container">
+          <PageMessage>{error || 'Restaurante nao encontrado.'}</PageMessage>
+        </div>
+      </PageSection>
+    )
+  }
+
+  return (
+    <>
+      <ProfileHero restaurant={restaurant} />
+      <RestaurantMenu dishes={restaurant.cardapio} />
+    </>
+  )
+}
 
 export default Categories
