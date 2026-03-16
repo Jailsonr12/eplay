@@ -6,7 +6,7 @@ import Restaurant from '../../models/Restaurant'
 import { getRestaurantById } from '../../services/api'
 import { PageMessage, PageSection } from '../../styles'
 
-const Categories = () => {
+const Profile = () => {
   const { id } = useParams()
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -73,4 +73,4 @@ const Categories = () => {
   )
 }
 
-export default Categories
+export default Profile
