@@ -122,11 +122,11 @@ export const FormLabel = styled.label`
   display: block;
 `
 
-export const FormInput = styled.input`
+export const FormInput = styled.input<{ $hasError?: boolean }>`
   margin-top: 8px;
   width: 100%;
   height: 32px;
-  border: none;
+  border: 1px solid ${(props) => (props.$hasError ? '#b00020' : 'transparent')};
   background-color: ${cores.vermelhoClaro};
   color: ${cores.cinza};
   font-size: 18px;
@@ -150,4 +150,12 @@ export const SuccessText = styled.p`
   color: ${cores.vermelhoClaro};
   font-size: 14px;
   line-height: 1.35;
+`
+
+export const FieldError = styled.small`
+  display: block;
+  margin-top: 4px;
+  color: #ffe3e7;
+  font-size: 11px;
+  font-weight: 700;
 `
